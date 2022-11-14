@@ -7,16 +7,19 @@ export async function statisticsController(
   opts: any,
 ): Promise<void> {
   fastify.get(
-    '/statistics/:id',
+    '/exercises/:id/statistics',
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { id } = request.params as { id: string };
-        const user = new User();
+        const user = new User(opts.submission_api);
+
+        if (!id) {
+          reply.status(400).send();
+          return;
+        }
+
         await user
           .getStatistics({ id })
-          .catch((error) => {
-            reply.status(500).send(error);
-          })
           .then((resolve: void | IGetAStatisticsResponse) => {
             const response = resolve as IGetAStatisticsResponse;
 
@@ -26,9 +29,14 @@ export async function statisticsController(
             } else {
               reply.status(200).send(response);
             }
+          })
+          .catch((error) => {
+            console.log(error);
+
+            reply.status(500).send(error);
           });
       } catch (error) {
-        reply.status(500).send();
+        reply.status(500).send(error);
       }
     },
   );
