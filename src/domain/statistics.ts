@@ -8,11 +8,11 @@ export class Statistics {
   private readonly _id: string;
   private readonly _average_time: number;
   private readonly _passed_total: [number, number];
+  private readonly _syntax_errors: number;
   private readonly _query_result: {
     [query: string]: {
       passes: number;
       fails: number;
-      syntax_errors: number;
       total: number;
       pass_percentage: number;
     };
@@ -22,11 +22,11 @@ export class Statistics {
     id: string,
     average_time: number,
     passed_total: [number, number],
+    syntax_errors: number,
     query_result: {
       [query: string]: {
         passes: number;
         fails: number;
-        syntax_errors: number;
         total: number;
         pass_percentage: number;
       };
@@ -48,30 +48,34 @@ export class Statistics {
         'Number of passes cannot be greater than number of attempts',
       );
     }
+    if (syntax_errors < 0) {
+      throw new Error('Number of syntax errors cannot be negative');
+    }
 
-    // Query attributes 
-    for (let key in query_result) {
-      let query = query_result[key];
-     
+    // Query attributes
+    for (const key in query_result) {
+      const query = query_result[key];
+
       if (query.passes < 0) {
         throw new Error('There cannot be less than 0 submissions passing');
       }
       // No query can have less people who passed it, than the total amount of people who have passed the exercise
       if (query.passes < left) {
-        throw new Error("There cannot be less people who have passed any single query, than the total number of people who have passed everything")
+        throw new Error(
+          'There cannot be less people who have passed any single query, than the total number of people who have passed everything',
+        );
       }
       if (query.fails < 0) {
         throw new Error('There cannot be less than 0 submissions failing');
-      }
-      if (query.syntax_errors < 0) {
-        throw new Error('There cannot be less than 0 syntax errors');
       }
       if (query.total < 0) {
         throw new Error('There cannot be less than 0 submissions');
       }
       // The total amount of submissions must be all passes + failures + syntax errors
-      if (query.total != (query.passes + query.fails + query.syntax_errors)) {
-        throw new Error("The total must be the sum of the number of passes, fails and syntax errors")
+      if (query.total != query.passes + query.fails) {
+        throw new Error(
+          'The total must be the sum of the number of passes and fails',
+        );
       }
       if (query.pass_percentage < 0) {
         throw new Error('There cannot be less than a 0% pass percentage');
@@ -81,6 +85,7 @@ export class Statistics {
     this._id = id;
     this._average_time = average_time;
     this._passed_total = passed_total;
+    this._syntax_errors = syntax_errors;
     this._query_result = query_result;
   }
 
@@ -93,11 +98,13 @@ export class Statistics {
   get passed_total(): [number, number] {
     return this._passed_total;
   }
+  get syntax_errors(): number {
+    return this._syntax_errors;
+  }
   get query_results(): {
     [query: string]: {
       passes: number;
       fails: number;
-      syntax_errors: number;
       total: number;
       pass_percentage: number;
     };

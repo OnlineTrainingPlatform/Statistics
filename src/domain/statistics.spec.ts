@@ -6,11 +6,10 @@ describe('Constructor', () => {
     // Assert
     expect(
       () =>
-        new Statistics('id', 11111111, [1, 2], {
+        new Statistics('id', 11111111, [1, 2], 0, {
           'A<> first query': {
             passes: 1,
             fails: 1,
-            syntax_errors: 0,
             total: 2,
             pass_percentage: 50,
           },
@@ -21,11 +20,10 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), -11111111, [1, 2], {
+          new Statistics(uuidv4(), -11111111, [1, 2], 0, {
             'A<> first query': {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
@@ -36,11 +34,10 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 1, {
             'A<> first query': {
               passes: 20,
               fails: 6,
-              syntax_errors: 1,
               total: -27,
               pass_percentage: 50,
             },
@@ -51,11 +48,10 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [100, 1], {
+          new Statistics(uuidv4(), 11111111, [100, 1], 0, {
             'A<> first query': {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
@@ -66,18 +62,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 0, {
             query1: {
               passes: -55,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
             query2: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
@@ -88,18 +82,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 0, {
             query1: {
               passes: 1,
               fails: -66,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
             query2: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
@@ -110,18 +102,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], -10, {
             query1: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
             query2: {
               passes: 1,
               fails: 1,
-              syntax_errors: -10,
               total: 2,
               pass_percentage: 50,
             },
@@ -132,18 +122,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 0, {
             query1: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: -22,
               pass_percentage: 50,
             },
             query2: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
@@ -154,18 +142,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 0, {
             query1: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
             query2: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: -50,
             },
@@ -176,18 +162,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 0, {
             query1: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },
             query2: {
               passes: 100,
               fails: 100,
-              syntax_errors: 100,
               total: 1,
               pass_percentage: 50,
             },
@@ -198,18 +182,16 @@ describe('Constructor', () => {
       // Assert
       expect(
         () =>
-          new Statistics(uuidv4(), 11111111, [1, 2], {
+          new Statistics(uuidv4(), 11111111, [1, 2], 0, {
             query1: {
               passes: 1,
               fails: 1,
-              syntax_errors: 0,
               total: 1,
               pass_percentage: 50,
             },
             query2: {
               passes: 0,
               fails: 1,
-              syntax_errors: 0,
               total: 2,
               pass_percentage: 50,
             },

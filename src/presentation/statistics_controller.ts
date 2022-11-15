@@ -31,8 +31,6 @@ export async function statisticsController(
             }
           })
           .catch((error) => {
-            console.log(error);
-
             reply.status(500).send(error);
           });
       } catch (error) {
