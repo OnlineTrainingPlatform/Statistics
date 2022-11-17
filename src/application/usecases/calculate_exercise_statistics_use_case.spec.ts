@@ -54,7 +54,7 @@ describe('do', () => {
     const use_case = new GetStatisticsUseCase(submissions_api);
 
     // Mock
-    submissions_api.getSubmissions.mockImplementation((exerciseID: string) => {
+    submissions_api.getSubmissions.mockImplementation(() => {
       return Promise.resolve([]);
     });
 
@@ -104,9 +104,6 @@ describe('do', () => {
     expect(actual.id).toBe(expected.id);
     expect(actual.passed_total).toStrictEqual(expected.passed_total);
     expect(actual.syntax_errors).toBe(expected.syntax_errors);
-
-    console.log(actual.query_results);
-
     expect(actual.query_results[0].passes).toBe(expected.query_results.passes);
     expect(actual.query_results[0].fails).toBe(expected.query_results.fails);
     expect(actual.query_results[0].total).toBe(expected.query_results.total);
@@ -138,7 +135,7 @@ describe('do', () => {
         submission_date: 40,
         passed_queries: [{ query: 'A<> first query' }],
         failed_queries: [{ query: 'B<> second query' }],
-        has_syntax_error: false,
+        has_syntax_error: true,
       },
     ];
 
@@ -162,7 +159,7 @@ describe('do', () => {
     // Assert
     expect(actual.average_time).toBe(expected.average_time);
     expect(actual.id).toBe(expected.id);
-    expect(actual.passed_total).toBe(expected.passed_total);
+    expect(actual.passed_total).toStrictEqual(expected.passed_total);
     expect(actual.syntax_errors).toBe(expected.syntax_errors);
     expect(actual.query_results[0].passes).toBe(expected.query_results.passes);
     expect(actual.query_results[0].fails).toBe(expected.query_results.fails);
@@ -202,7 +199,7 @@ describe('do', () => {
     const use_case = new GetStatisticsUseCase(submissions_api);
 
     // Mock
-    submissions_api.getSubmissions.mockImplementation((exerciseID: string) => {
+    submissions_api.getSubmissions.mockImplementation(() => {
       return Promise.resolve(submissions);
     });
 

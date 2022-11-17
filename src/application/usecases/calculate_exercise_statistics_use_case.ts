@@ -37,15 +37,15 @@ export class GetStatisticsUseCase
   ): Promise<Statistics | undefined> {
     if (submissions.length === 0) return undefined;
 
-    const list_of_all_queries: string[] = [];
-    list_of_all_queries.concat(
-      Array.from(Object.keys(submissions[0].passed_queries)),
+    // Doesn't work from here
+    let list_of_all_queries: string[] = [];
+    list_of_all_queries = list_of_all_queries.concat(
+      Object.values(submissions[0].passed_queries),
     );
-    list_of_all_queries.concat(
-      Array.from(Object.keys(submissions[0].failed_queries)),
+    list_of_all_queries = list_of_all_queries.concat(
+      Object.values(submissions[0].failed_queries),
     );
-
-    console.table(list_of_all_queries);
+    // Until here
 
     const dictionary = new Map<string, [number, number]>();
 
@@ -93,7 +93,7 @@ export class GetStatisticsUseCase
     const dictionary_keys = Array.from(dictionary.keys());
     const dictionary_values = Array.from(dictionary.values());
 
-    const query_result: Record<string, any> = {};
+    const query_result: Record<string, object> = {};
     dictionary_keys.map((key, i) => {
       query_result[key] = {
         passes: dictionary_values[i][0],

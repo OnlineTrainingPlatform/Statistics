@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 
 export async function statusController(
   fastify: FastifyInstance,
-  opts: any,
 ): Promise<void> {
   fastify.get(
     '/status',

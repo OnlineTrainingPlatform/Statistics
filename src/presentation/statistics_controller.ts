@@ -4,6 +4,7 @@ import { IGetAStatisticsResponse } from '../application/usecases/calculate_exerc
 
 export async function statisticsController(
   fastify: FastifyInstance,
+  // eslint-disable-next-line
   opts: any,
 ): Promise<void> {
   fastify.get(

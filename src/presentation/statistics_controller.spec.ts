@@ -1,13 +1,9 @@
 import fastify from 'fastify';
 import { mock } from 'jest-mock-extended';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  IGetAStatisticsRequest,
-  IGetAStatisticsResponse,
-} from '../application/usecases/calculate_exercise_statistics_use_case';
+import { IGetAStatisticsResponse } from '../application/usecases/calculate_exercise_statistics_use_case';
 import { statisticsController } from './statistics_controller';
 import { ISubmissionAPI } from '../infrastructure/i_submission_api';
-import { Statistics } from '../domain';
 import { User } from '../application/actors/user';
 
 describe('get: /statistics/:id ', () => {
@@ -42,11 +38,9 @@ describe('get: /statistics/:id ', () => {
 
   it('It should give status code 400 if no id is given', async () => {
     // Arrange
-    const exerciseId = uuidv4();
 
     // Act
     const response = await server.inject('exercises//statistics');
-    const payload = JSON.parse(response.payload);
     expect(response.statusCode).toBe(400);
   });
 
