@@ -11,16 +11,16 @@ const STATISTICS_OBJECT_ONE_SUBMISSION = new Statistics(
   1,
   {
     'A<> first query': {
-      passes: 90,
-      fails: 10,
-      total: 100,
-      pass_percentage: 90,
+      passes: 1,
+      fails: 0,
+      total: 1,
+      pass_percentage: 100,
     },
     'B<> second query': {
-      passes: 90,
-      fails: 10,
-      total: 100,
-      pass_percentage: 90,
+      passes: 0,
+      fails: 1,
+      total: 1,
+      pass_percentage: 0,
     },
   },
 );
@@ -32,16 +32,16 @@ const STATISTICS_OBJECT_MULTIPLE_SUBMISSION = new Statistics(
   1,
   {
     'A<> first query': {
-      passes: 90,
-      fails: 10,
-      total: 100,
-      pass_percentage: 90,
+      passes: 2,
+      fails: 0,
+      total: 2,
+      pass_percentage: 100,
     },
     'B<> second query': {
-      passes: 90,
-      fails: 10,
-      total: 100,
-      pass_percentage: 90,
+      passes: 1,
+      fails: 1,
+      total: 2,
+      pass_percentage: 50,
     },
   },
 );
@@ -100,16 +100,18 @@ describe('do', () => {
     }
 
     // Assert
-    expect(actual.average_time).toBe(expected.average_time);
-    expect(actual.id).toBe(expected.id);
-    expect(actual.passed_total).toStrictEqual(expected.passed_total);
-    expect(actual.syntax_errors).toBe(expected.syntax_errors);
-    expect(actual.query_results[0].passes).toBe(expected.query_results.passes);
-    expect(actual.query_results[0].fails).toBe(expected.query_results.fails);
-    expect(actual.query_results[0].total).toBe(expected.query_results.total);
-    expect(actual.query_results[0].pass_percentage).toBe(
-      expected.query_results.pass_percentage,
-    );
+    const key = Object.keys(actual.query_results)[0];
+    expect(actual).toStrictEqual(expected)
+    // expect(actual.average_time).toBe(expected.average_time);
+    // expect(actual.id).toBe(expected.id);
+    // expect(actual.passed_total).toStrictEqual(expected.passed_total);
+    // expect(actual.syntax_errors).toBe(expected.syntax_errors);
+    // expect(actual.query_results[key].passes).toBe(expected.query_results[key].passes);
+    // expect(actual.query_results[key].fails).toBe(expected.query_results[key].fails);
+    // expect(actual.query_results[key].total).toBe(expected.query_results[key].total);
+    // expect(actual.query_results[key].pass_percentage).toBe(
+    //   expected.query_results[key].pass_percentage,
+    // );
   });
   it('Should return a Statistics object from multiple submissions', async () => {
     // Arrange
@@ -157,16 +159,18 @@ describe('do', () => {
     }
 
     // Assert
-    expect(actual.average_time).toBe(expected.average_time);
-    expect(actual.id).toBe(expected.id);
-    expect(actual.passed_total).toStrictEqual(expected.passed_total);
-    expect(actual.syntax_errors).toBe(expected.syntax_errors);
-    expect(actual.query_results[0].passes).toBe(expected.query_results.passes);
-    expect(actual.query_results[0].fails).toBe(expected.query_results.fails);
-    expect(actual.query_results[0].total).toBe(expected.query_results.total);
-    expect(actual.query_results[0].pass_percentage).toBe(
-      expected.query_results.pass_percentage,
-    );
+    expect(actual).toStrictEqual(expected)
+    // const key = Object.keys(actual.query_results)[0];
+    // expect(actual.average_time).toBe(expected.average_time);
+    // expect(actual.id).toBe(expected.id);
+    // expect(actual.passed_total).toStrictEqual(expected.passed_total);
+    // expect(actual.syntax_errors).toBe(expected.syntax_errors);
+    // expect(actual.query_results[key].passes).toBe(expected.query_results[key].passes);
+    // expect(actual.query_results[key].fails).toBe(expected.query_results[key].fails);
+    // expect(actual.query_results[key].total).toBe(expected.query_results[key].total);
+    // expect(actual.query_results[key].pass_percentage).toBe(
+    //   expected.query_results[key].pass_percentage,
+    // );
   });
   it('Should ____ if the ids do not match', async () => {
     // Arrange

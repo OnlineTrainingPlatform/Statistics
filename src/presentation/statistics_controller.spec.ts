@@ -3,8 +3,30 @@ import { mock } from 'jest-mock-extended';
 import { v4 as uuidv4 } from 'uuid';
 import { IGetAStatisticsResponse } from '../application/usecases/calculate_exercise_statistics_use_case';
 import { statisticsController } from './statistics_controller';
-import { ISubmissionAPI } from '../infrastructure/i_submission_api';
+import { ISubmissionAPI, ISubmission } from '../infrastructure/i_submission_api';
 import { User } from '../application/actors/user';
+import { Statistics } from '../domain/statistics';
+
+const STATISTICS_OBJECT_MULTIPLE_SUBMISSION = new Statistics(
+  uuidv4(),
+  50,
+  [1, 2],
+  1,
+  {
+    'A<> first query': {
+      passes: 2,
+      fails: 0,
+      total: 2,
+      pass_percentage: 100,
+    },
+    'B<> second query': {
+      passes: 1,
+      fails: 1,
+      total: 2,
+      pass_percentage: 50,
+    },
+  },
+);
 
 describe('get: /statistics/:id ', () => {
   const server = fastify();
@@ -14,8 +36,26 @@ describe('get: /statistics/:id ', () => {
     submission_api: submission_api,
   });
   it('If status code is 200 then we successfully get statistics', async () => {
-    // // Arrange
+    // Arrange
     const exerciseId = uuidv4();
+
+    // Mock
+    const submission: ISubmission = {
+      id: 'submission_id',
+      exercise_id: "some_id",
+      solution: 'solution',
+      submission_date: 123,
+      passed_queries: [{ query: 'A<> first query' }],
+      failed_queries: [{ query: 'B<> second query' }],
+      has_syntax_error: true,
+    };
+
+    submission_api.getSubmissions.mockImplementation((exerciseID: string) => {
+      if (exerciseID === submission.id) {
+        return Promise.resolve([submission]);
+      }
+      return Promise.resolve([]);
+    });
 
     // Act
     const response = await server
@@ -44,17 +84,14 @@ describe('get: /statistics/:id ', () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it('If status code is 404 then ____', async () => {
+  it('Status code is 404, if the statistics for an exercise could not be found', async () => {
     // Arrange
     const exerciseId = uuidv4();
 
     // Mock
-    // user.getStatistics.mockImplementation(({ id: exerciseId }) => {
-    //   return Promise.reject({});
-    // });
-    user.getStatistics.mockResolvedValue({
-      statistics: {},
-    } as IGetAStatisticsResponse);
+    submission_api.getSubmissions.mockImplementation(() => {
+      return Promise.resolve([]);
+    });
 
     // Act
     const response = await server.inject(`exercises/${exerciseId}/statistics`);
@@ -68,8 +105,8 @@ describe('get: /statistics/:id ', () => {
     const exerciseId = uuidv4();
 
     // Mock
-    user.getStatistics.mockImplementation(() => {
-      throw new Error();
+    submission_api.getSubmissions.mockImplementation(() => {
+      throw new Error("Something went wrong")
     });
 
     // Act

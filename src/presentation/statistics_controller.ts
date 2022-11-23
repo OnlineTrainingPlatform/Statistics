@@ -19,23 +19,16 @@ export async function statisticsController(
           return;
         }
 
-        await user
-          .getStatistics({ id })
-          .then((resolve: void | IGetAStatisticsResponse) => {
-            const response = resolve as IGetAStatisticsResponse;
+        const res = await user.getStatistics({ id });
+        if (res.statistics === undefined) {
+          reply.status(404).send("No submissions found for statistics");
+          return;
+        }
+        reply.status(200).send(res);
 
-            if (response.statistics == undefined) {
-              reply.status(404).send();
-              return;
-            } else {
-              reply.status(200).send(response);
-            }
-          })
-          .catch((error) => {
-            reply.status(500).send(error);
-          });
       } catch (error) {
-        reply.status(500).send(error);
+          console.log(error)
+          reply.status(500).send(error);
       }
     },
   );

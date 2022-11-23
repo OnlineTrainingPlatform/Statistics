@@ -1,3 +1,4 @@
+import { queryStatsDict } from 'types/type_alias';
 import { Statistics } from '../../domain';
 import {
   ISubmission,
@@ -32,86 +33,111 @@ export class GetStatisticsUseCase
       statistics: await this.calculateStatistics(submissionsResult),
     };
   }
+
   public async calculateStatistics(
     submissions: ISubmission[],
   ): Promise<Statistics | undefined> {
     if (submissions.length === 0) return undefined;
 
-    // Doesn't work from here
-    let list_of_all_queries: string[] = [];
-    list_of_all_queries = list_of_all_queries.concat(
-      Object.values(submissions[0].passed_queries),
-    );
-    list_of_all_queries = list_of_all_queries.concat(
-      Object.values(submissions[0].failed_queries),
-    );
-    // Until here
-
-    const dictionary = new Map<string, [number, number]>();
-
-    for (const element in list_of_all_queries) {
-      dictionary.set(element, [0, 0]);
-    }
-
-    const submission_times: number[] = [];
     const total_submissions = submissions.length;
-    let total_syntax_errors = 0;
+    const total_syntax_errors = this.countSyntaxErrors(submissions);
+    const total_passed = this.totalPassedQueries(submissions);
 
-    let total_passed = 0;
+    // Get all submission dates
+    const submission_dates = submissions.map(sub => sub.submission_date);
 
-    submissions.map((submission) => {
-      // if there are no syntax errors and no failed queries, all queries must have passed.
-      if (
-        !submission.has_syntax_error &&
-        Object.keys(submission.failed_queries).length === 0
-      ) {
-        total_passed += 1;
-      }
-      if (submission.has_syntax_error) {
-        total_syntax_errors += 1;
-      }
-      // fails
-      submission.failed_queries.map((failed_query) => {
-        const temp = dictionary.get(failed_query.query);
-        if (!temp) return { statistics: undefined };
-        dictionary.set(failed_query.query, [temp[0], temp[1] + 1]);
+
+    const all_queries = this.getAllQueries(submissions);
+    const query_dict = new Map<string, [number, number]>();
+
+    all_queries.forEach(q => {
+      query_dict.set(q, [0, 0]); // [passed_count, failed_count]
+    });
+
+    submissions.forEach((submission) => {
+      
+      submission.failed_queries.forEach((failed_query) => {
+        const temp = query_dict.get(failed_query.query);
+        if (temp) {
+          query_dict.set(failed_query.query, [temp[0], temp[1] + 1]);
+        }
       });
 
       // passes
-      submission.passed_queries.map((pass_query) => {
-        const temp = dictionary.get(pass_query.query);
-        if (!temp) return { statistics: undefined };
-        dictionary.set(pass_query.query, [temp[0] + 1, temp[1]]);
+      submission.passed_queries.forEach((pass_query) => {
+        const temp = query_dict.get(pass_query.query);
+        if (temp) {
+          query_dict.set(pass_query.query, [temp[0] + 1, temp[1]]);
+        }
       });
 
-      submission_times.push(submission.submission_date);
+      //submission_dates.push(submission.submission_date);
     });
 
-    const calculated_average_time =
-      submission_times.reduce((a, b) => a + b, 0) / submission_times.length;
+    const average_time = submission_dates.reduce((a, b) => a + b, 0) / submission_dates.length;
 
-    const dictionary_keys = Array.from(dictionary.keys());
-    const dictionary_values = Array.from(dictionary.values());
+    const dictionary_keys = Array.from(query_dict.keys());
+    const dictionary_values = Array.from(query_dict.values());
 
-    const query_result: Record<string, object> = {};
-    dictionary_keys.map((key, i) => {
-      query_result[key] = {
+    let query_results: queryStatsDict = {};
+    dictionary_keys.forEach((key, i) => {
+      query_results[key] = {
         passes: dictionary_values[i][0],
         fails: dictionary_values[i][1],
         total: dictionary_values[i][0] + dictionary_values[i][1],
         pass_percentage:
-          dictionary_values[i][0] / dictionary_values[i][0] +
-          dictionary_values[i][1],
+          dictionary_values[i][0] / (dictionary_values[i][0] +
+          dictionary_values[i][1]) * 100,
       };
     });
 
     const statistics = new Statistics(
       submissions[0].exercise_id,
-      calculated_average_time,
+      average_time,
       [total_passed, total_submissions],
       total_syntax_errors,
-      query_result,
+      query_results,
     );
     return statistics;
+  }
+
+  private getAllQueries(submissions: ISubmission[]) {
+    // Create array of all queries, passed and failed
+    let list_of_all_queries: string[] = [];
+    submissions.forEach((sub) => {
+      const passed = this.parseQueries(sub.passed_queries);
+      list_of_all_queries = list_of_all_queries.concat(passed);
+      list_of_all_queries = list_of_all_queries.concat(this.parseQueries(sub.failed_queries));
+    });
+    return list_of_all_queries;
+  }
+
+  private countSyntaxErrors(submissions: ISubmission[]) {
+    return submissions.reduce(
+      (count, sub) => count + Number(sub.has_syntax_error),
+      0
+    );
+  }
+
+  private totalPassedQueries(submissions: ISubmission[]) {
+    return submissions.reduce(
+      (count, sub) => !sub.has_syntax_error && Object.keys(sub.failed_queries).length === 0
+        ? count + 1
+        : count,
+      0
+    );
+  }
+
+  /**
+   * Converts the queries as object array to array of strings
+   * @param queries queries as object array ie.: [{query_1: 'E<> Proc.F'}, ...]
+   * @returns the query from each object ie.: ['E<> Proc.F', ...]
+   */
+  private parseQueries(queries: object[]) {
+    const arr: string[] = [];
+    for (const obj of queries) {
+      arr.push(Object.values(obj)[0] as string);
+    }
+    return arr;
   }
 }

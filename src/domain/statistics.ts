@@ -1,3 +1,5 @@
+import { queryStatsDict } from 'types/type_alias';
+
 function isUuidv4(input: string): boolean {
   const regexExp =
     /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
@@ -9,28 +11,14 @@ export class Statistics {
   private readonly _average_time: number;
   private readonly _passed_total: [number, number];
   private readonly _syntax_errors: number;
-  private readonly _query_result: {
-    [query: string]: {
-      passes: number;
-      fails: number;
-      total: number;
-      pass_percentage: number;
-    };
-  };
+  private readonly _query_result: queryStatsDict;
 
   constructor(
     id: string,
     average_time: number,
     passed_total: [number, number],
     syntax_errors: number,
-    query_result: {
-      [query: string]: {
-        passes: number;
-        fails: number;
-        total: number;
-        pass_percentage: number;
-      };
-    },
+    query_result: queryStatsDict,
   ) {
     if (!isUuidv4(id)) {
       throw new Error('Exercise ID is not a UUID');
@@ -59,12 +47,12 @@ export class Statistics {
       if (query.passes < 0) {
         throw new Error('There cannot be less than 0 submissions passing');
       }
-      // No query can have less people who passed it, than the total amount of people who have passed the exercise
-      if (query.passes < left) {
-        throw new Error(
-          'There cannot be less people who have passed any single query, than the total number of people who have passed everything',
-        );
-      }
+      // // No query can have less people who passed it, than the total amount of people who have passed the exercise
+      // if (query.passes < left) {
+      //   throw new Error(
+      //     'There cannot be less people who have passed any single query, than the total number of people who have passed everything',
+      //   );
+      // }
       if (query.fails < 0) {
         throw new Error('There cannot be less than 0 submissions failing');
       }
@@ -101,14 +89,7 @@ export class Statistics {
   get syntax_errors(): number {
     return this._syntax_errors;
   }
-  get query_results(): {
-    [query: string]: {
-      passes: number;
-      fails: number;
-      total: number;
-      pass_percentage: number;
-    };
-  } {
+  get query_results(): queryStatsDict {
     return this._query_result;
   }
 }
