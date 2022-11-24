@@ -1,4 +1,4 @@
-import { ISubmissionAPI } from '../../infrastructure/I_Submission_API';
+import { ISubmissionAPI } from '../../infrastructure/i_submission_api';
 import {
   GetStatisticsUseCase,
   IGetAStatisticsRequest,

@@ -3,14 +3,22 @@ import { Statistics } from '../../domain';
 import {
   ISubmission,
   ISubmissionAPI,
-} from '../../infrastructure/I_Submission_API';
+} from '../../infrastructure';
 import { IUseCase } from './i_use_case';
 
 export interface IGetAStatisticsRequest {
-  id: string;
+  exercise_id: string;
 }
 export interface IGetAStatisticsResponse {
-  statistics: Statistics | undefined;
+  statistics: {
+    id: string,
+    average_time: number,
+    passed_total: {
+      passed: number,
+      total: number,
+    },
+    query_result: queryStatsDict
+  } | undefined;
 }
 
 export class GetStatisticsUseCase
@@ -26,12 +34,27 @@ export class GetStatisticsUseCase
     request: IGetAStatisticsRequest,
   ): Promise<IGetAStatisticsResponse> {
     const submissionsResult = await this.submissions_api.getSubmissions(
-      request.id,
+      request.exercise_id,
     );
 
+    const statistics = await this.calculateStatistics(submissionsResult)
+    if (!statistics) {
+      return {
+        statistics: undefined
+      };
+    }
+
     return {
-      statistics: await this.calculateStatistics(submissionsResult),
-    };
+      statistics: {
+        id: request.exercise_id,
+        average_time: statistics.average_time,
+        passed_total: {
+          passed: statistics.passed_total[0],
+          total: statistics.passed_total[1]
+        },
+        query_result: statistics.query_results
+      }
+    }
   }
 
   public async calculateStatistics(
@@ -71,10 +94,13 @@ export class GetStatisticsUseCase
         }
       });
 
-      //submission_dates.push(submission.submission_date);
+      submission_dates.push(submission.submission_date);
     });
 
-    const average_time = submission_dates.reduce((a, b) => a + b, 0) / submission_dates.length;
+    let average_time = 0;
+    if (submission_dates.length > 0) {
+      average_time = submission_dates.reduce((a, b) => a + b, 0) / submission_dates.length;
+    }
 
     const dictionary_keys = Array.from(query_dict.keys());
     const dictionary_values = Array.from(query_dict.values());

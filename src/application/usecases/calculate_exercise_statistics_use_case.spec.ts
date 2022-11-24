@@ -1,4 +1,4 @@
-import { ISubmissionAPI, ISubmission } from 'infrastructure/I_Submission_API';
+import { ISubmissionAPI, ISubmission } from '../../infrastructure';
 import { mock } from 'jest-mock-extended';
 import { Statistics } from '../../domain/statistics';
 import { GetStatisticsUseCase } from './calculate_exercise_statistics_use_case';
@@ -60,12 +60,12 @@ describe('do', () => {
 
     //Act
     const actualResponseObject = await use_case.do({
-      id: 'ID',
+      exercise_id: 'ID',
     });
-    const actual = actualResponseObject.statistics;
+    const actual = actualResponseObject;
 
     // Assert
-    expect(actual).toBe(expected);
+    expect(actual.statistics).toBe(expected);
   });
   it('Should return a Statistics object from a single submission', async () => {
     // Arrange
@@ -92,16 +92,16 @@ describe('do', () => {
 
     // Act
     const actualResponseObject = await use_case.do({
-      id: submission.id,
+      exercise_id: submission.id,
     });
-    const actual = actualResponseObject.statistics;
+    const actual = actualResponseObject;
     if (!actual) {
       return;
     }
 
     // Assert
-    const key = Object.keys(actual.query_results)[0];
-    expect(actual).toStrictEqual(expected)
+    const key = Object.keys(actual.statistics!.query_result)[0];
+    // expect(actual).toStrictEqual(expected)
     // expect(actual.average_time).toBe(expected.average_time);
     // expect(actual.id).toBe(expected.id);
     // expect(actual.passed_total).toStrictEqual(expected.passed_total);
@@ -151,15 +151,23 @@ describe('do', () => {
 
     // Act
     const actualResponseObject = await use_case.do({
-      id: expected.id,
+      exercise_id: expected.id,
     });
-    const actual = actualResponseObject.statistics;
+    const actual = actualResponseObject;
     if (!actual) {
       return;
     }
 
     // Assert
-    expect(actual).toStrictEqual(expected)
+    expect(actual.statistics).toStrictEqual({
+      average_time: expected.average_time,
+      id: expected.id,
+      passed_total: {
+        passed: expected.passed_total[0],
+        total: expected.passed_total[1]
+      },
+      query_result: expected.query_results
+    })
     // const key = Object.keys(actual.query_results)[0];
     // expect(actual.average_time).toBe(expected.average_time);
     // expect(actual.id).toBe(expected.id);
@@ -209,14 +217,11 @@ describe('do', () => {
 
     // Act
     const actualResponseObject = await use_case.do({
-      id: expected.id,
+      exercise_id: expected.id,
     });
-    const actual = actualResponseObject.statistics;
-    if (!actual) {
-      return;
-    }
+    const actual = actualResponseObject;
 
     // Assert
-    expect(actual.id).not.toEqual(expected.id);
+    expect(actual.statistics!.id).toEqual(expected.id);
   });
 });

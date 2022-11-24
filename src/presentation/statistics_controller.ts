@@ -19,12 +19,12 @@ export async function statisticsController(
           return;
         }
 
-        const res = await user.getStatistics({ id });
-        if (res.statistics === undefined) {
+        const res = await user.getStatistics({ exercise_id: id });
+        if (!res.statistics) {
           reply.status(404).send("No submissions found for statistics");
           return;
         }
-        reply.status(200).send(res);
+        reply.status(200).send(res.statistics);
 
       } catch (error) {
           console.log(error)

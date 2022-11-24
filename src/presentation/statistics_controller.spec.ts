@@ -35,6 +35,7 @@ describe('get: /statistics/:id ', () => {
   server.register(statisticsController, {
     submission_api: submission_api,
   });
+
   it('If status code is 200 then we successfully get statistics', async () => {
     // Arrange
     const exerciseId = uuidv4();
@@ -42,7 +43,7 @@ describe('get: /statistics/:id ', () => {
     // Mock
     const submission: ISubmission = {
       id: 'submission_id',
-      exercise_id: "some_id",
+      exercise_id: exerciseId,
       solution: 'solution',
       submission_date: 123,
       passed_queries: [{ query: 'A<> first query' }],
@@ -51,7 +52,7 @@ describe('get: /statistics/:id ', () => {
     };
 
     submission_api.getSubmissions.mockImplementation((exerciseID: string) => {
-      if (exerciseID === submission.id) {
+      if (exerciseID === submission.exercise_id) {
         return Promise.resolve([submission]);
       }
       return Promise.resolve([]);
@@ -62,18 +63,16 @@ describe('get: /statistics/:id ', () => {
       .inject()
       .get(`exercises/${exerciseId}/statistics`);
     const payload = JSON.parse(response.payload);
+
     // Assert
     expect(response.statusCode).toBe(200);
     expect(typeof payload.average_time).toBe('number');
-    expect(typeof payload.passed_total).toBe('[number, number]');
+    expect(typeof payload.passed_total).toBe('object');
     expect(typeof payload.query_result).toBe('object');
-    expect(typeof payload.query_result.passes).toBe('number');
-    expect(typeof payload.query_result.fails).toBe('number');
-    expect(typeof payload.query_result.syntax_errors).toBe('number');
-    expect(typeof payload.query_result.total).toBe('number');
-    expect(typeof payload.query_result.pass_percentage).toBe('number');
-
-    //expect(response.)
+    expect(typeof payload.query_result["A<> first query"].passes).toBe('number');
+    expect(typeof payload.query_result["A<> first query"].fails).toBe('number');
+    expect(typeof payload.query_result["A<> first query"].total).toBe('number');
+    expect(typeof payload.query_result["A<> first query"].pass_percentage).toBe('number');
   });
 
   it('It should give status code 400 if no id is given', async () => {
