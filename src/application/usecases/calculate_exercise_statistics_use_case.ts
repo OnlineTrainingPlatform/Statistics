@@ -103,7 +103,7 @@ export class GetStatisticsUseCase
     const dictionary_keys = Array.from(query_dict.keys());
     const dictionary_values = Array.from(query_dict.values());
 
-    let query_results: queryStatsDict = {};
+    const query_results: queryStatsDict = {};
     dictionary_keys.forEach((key, i) => {
       query_results[key] = {
         passes: dictionary_values[i][0],
