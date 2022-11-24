@@ -1,0 +1,130 @@
+name: Continous Integration
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  # https://docs.snyk.io/features/snyk-cli/guides-for-our-cli/set-severity-thresholds-for-cli-tests
+  SNYK_THRESHOLD: low #low|medium|high|critical
+  SNYK_CODE_OUT_FILE: snyk.sarif
+
+jobs:
+  styling:
+    strategy:
+      matrix:
+        node-version: [16.x]
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # https://github.com/actions/checkout
+      - name: Check out workspace repository
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+      # https://github.com/actions/setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install NPM development dependencies
+        run: npm i
+      - name: Run formatting
+        run: npm run format
+      - name: Run linting
+        run: npm run lint
+      - name: Push formatting and linting fixes
+      # https://github.com/marketplace/actions/add-commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          committer_name: GitHub Actions
+          committer_email: 41898282+github-actions[bot]@users.noreply.github.com
+          message: 'format: Automatic formatted and linted stuff'
+          push: true
+
+  testing:
+    needs: styling
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # https://github.com/actions/checkout
+      - name: Check out workspace repository
+        uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+      # https://github.com/actions/setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install NPM development dependencies
+        run: npm i
+
+      - name: Run tests
+        run: npm run test:ci
+        # Ensure security and coverage checks are done
+      # https://github.com/marketplace/actions/jest-coverage-comment
+      - name: Jest coverage comment
+        # Run this even if a test fails
+        if: ${{ always() }}
+        id: coverageComment
+        uses: MishaKav/jest-coverage-comment@main
+        with:
+          coverage-summary-path: ./coverage/coverage-summary.json
+          title: Jest Coverage
+          summary-title: jest Summary
+          badge-title: Coverage
+          hide-comment: false
+          create-new-comment: false
+          hide-summary: false
+      - name: Check the output coverage
+        # Run this even if a test fails
+        if: ${{ always() }}
+        run: |
+          echo "Summary Report"
+          echo "Coverage Percantage - ${{ steps.coverageComment.outputs.coverage }}"
+          echo "Coverage Color - ${{ steps.coverageComment.outputs.color }}"
+          echo "Junit Report"
+          echo "tests - ${{ steps.coverageComment.outputs.tests }}"
+          echo "skipped - ${{ steps.coverageComment.outputs.skipped }}"
+          echo "failures - ${{ steps.coverageComment.outputs.failures }}"
+          echo "errors - ${{ steps.coverageComment.outputs.errors }}"
+          echo "time - ${{ steps.coverageComment.outputs.time }}"
+          echo "Coverage Report"
+          echo "lines - ${{ steps.coverageComment.outputs.lines }}"
+          echo "branches - ${{ steps.coverageComment.outputs.branches }}"
+          echo "functions - ${{ steps.coverageComment.outputs.functions }}"
+          echo "statements - ${{ steps.coverageComment.outputs.statements }}"
+          echo "coverage - ${{ steps.coverageComment.outputs.coverage }}"
+          echo "color - ${{ steps.coverageComment.outputs.color }}"
+
+      - name: Audit dependencies
+        # Run this even if a test fails
+        if: ${{ always() }}
+        run: npm run audit
+
+  security:
+    needs: testing
+
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Snyk Code
+      # https://github.com/snyk/actions
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=${{ env.SNYK_THRESHOLD }}
+            --sarif-file-output=${{ env.SNYK_CODE_OUT_FILE }}
+      - name: Upload result to GitHub Code Scanning
+        # Run this even if a test fails
+        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ env.SNYK_CODE_OUT_FILE }}
