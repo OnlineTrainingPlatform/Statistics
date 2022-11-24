@@ -16,14 +16,9 @@ export class FetchSubmissionsApi implements ISubmissionApi {
         Promise.reject('Failed retrieving the submissions');
       }
 
-      const body = (await response.json()) as {
-        submissions: ISubmission[];
-      };
+      const submissions = (await response.json()) as ISubmission[];
 
-      console.log(Object.keys(body));
-      console.log(body.submissions[0]);
-
-      return Promise.resolve(body.submissions);
+      return Promise.resolve(submissions);
     } catch (error) {
       return Promise.reject(error);
     }
