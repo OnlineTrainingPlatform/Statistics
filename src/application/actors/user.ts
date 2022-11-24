@@ -1,4 +1,4 @@
-import { ISubmissionAPI } from '../../infrastructure/i_submission_api';
+import { ISubmissionApi } from '../../infrastructure/i_submission_api';
 import {
   GetStatisticsUseCase,
   IGetAStatisticsRequest,
@@ -11,7 +11,7 @@ export class User {
     IGetAStatisticsRequest,
     IGetAStatisticsResponse
   >;
-  constructor(submission_api: ISubmissionAPI) {
+  constructor(submission_api: ISubmissionApi) {
     this.getStatisticsUseCase = new GetStatisticsUseCase(submission_api);
   }
   public async getStatistics(

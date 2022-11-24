@@ -1,32 +1,31 @@
 import { queryStatsDict } from 'types/type_alias';
 import { Statistics } from '../../domain';
-import {
-  ISubmission,
-  ISubmissionAPI,
-} from '../../infrastructure';
+import { ISubmission, ISubmissionApi } from '../../infrastructure';
 import { IUseCase } from './i_use_case';
 
 export interface IGetAStatisticsRequest {
   exercise_id: string;
 }
 export interface IGetAStatisticsResponse {
-  statistics: {
-    id: string,
-    average_time: number,
-    passed_total: {
-      passed: number,
-      total: number,
-    },
-    query_result: queryStatsDict
-  } | undefined;
+  statistics:
+    | {
+        id: string;
+        average_time: number;
+        passed_total: {
+          passed: number;
+          total: number;
+        };
+        query_result: queryStatsDict;
+      }
+    | undefined;
 }
 
 export class GetStatisticsUseCase
   implements IUseCase<IGetAStatisticsRequest, IGetAStatisticsResponse>
 {
-  private readonly submissions_api: ISubmissionAPI;
+  private readonly submissions_api: ISubmissionApi;
 
-  constructor(submissions_api: ISubmissionAPI) {
+  constructor(submissions_api: ISubmissionApi) {
     this.submissions_api = submissions_api;
   }
 
@@ -37,10 +36,10 @@ export class GetStatisticsUseCase
       request.exercise_id,
     );
 
-    const statistics = await this.calculateStatistics(submissionsResult)
+    const statistics = await this.calculateStatistics(submissionsResult);
     if (!statistics) {
       return {
-        statistics: undefined
+        statistics: undefined,
       };
     }
 
@@ -50,11 +49,11 @@ export class GetStatisticsUseCase
         average_time: statistics.average_time,
         passed_total: {
           passed: statistics.passed_total[0],
-          total: statistics.passed_total[1]
+          total: statistics.passed_total[1],
         },
-        query_result: statistics.query_results
-      }
-    }
+        query_result: statistics.query_results,
+      },
+    };
   }
 
   public async calculateStatistics(
@@ -67,18 +66,16 @@ export class GetStatisticsUseCase
     const total_passed = this.totalPassedQueries(submissions);
 
     // Get all submission dates
-    const submission_dates = submissions.map(sub => sub.submission_date);
-
+    const submission_dates = submissions.map((sub) => sub.submission_date);
 
     const all_queries = this.getAllQueries(submissions);
     const query_dict = new Map<string, [number, number]>();
 
-    all_queries.forEach(q => {
+    all_queries.forEach((q) => {
       query_dict.set(q, [0, 0]); // [passed_count, failed_count]
     });
 
     submissions.forEach((submission) => {
-      
       submission.failed_queries.forEach((failed_query) => {
         const temp = query_dict.get(failed_query.query);
         if (temp) {
@@ -99,7 +96,8 @@ export class GetStatisticsUseCase
 
     let average_time = 0;
     if (submission_dates.length > 0) {
-      average_time = submission_dates.reduce((a, b) => a + b, 0) / submission_dates.length;
+      average_time =
+        submission_dates.reduce((a, b) => a + b, 0) / submission_dates.length;
     }
 
     const dictionary_keys = Array.from(query_dict.keys());
@@ -112,8 +110,9 @@ export class GetStatisticsUseCase
         fails: dictionary_values[i][1],
         total: dictionary_values[i][0] + dictionary_values[i][1],
         pass_percentage:
-          dictionary_values[i][0] / (dictionary_values[i][0] +
-          dictionary_values[i][1]) * 100,
+          (dictionary_values[i][0] /
+            (dictionary_values[i][0] + dictionary_values[i][1])) *
+          100,
       };
     });
 
@@ -133,7 +132,9 @@ export class GetStatisticsUseCase
     submissions.forEach((sub) => {
       const passed = this.parseQueries(sub.passed_queries);
       list_of_all_queries = list_of_all_queries.concat(passed);
-      list_of_all_queries = list_of_all_queries.concat(this.parseQueries(sub.failed_queries));
+      list_of_all_queries = list_of_all_queries.concat(
+        this.parseQueries(sub.failed_queries),
+      );
     });
     return list_of_all_queries;
   }
@@ -141,16 +142,17 @@ export class GetStatisticsUseCase
   private countSyntaxErrors(submissions: ISubmission[]) {
     return submissions.reduce(
       (count, sub) => count + Number(sub.has_syntax_error),
-      0
+      0,
     );
   }
 
   private totalPassedQueries(submissions: ISubmission[]) {
     return submissions.reduce(
-      (count, sub) => !sub.has_syntax_error && Object.keys(sub.failed_queries).length === 0
-        ? count + 1
-        : count,
-      0
+      (count, sub) =>
+        !sub.has_syntax_error && Object.keys(sub.failed_queries).length === 0
+          ? count + 1
+          : count,
+      0,
     );
   }
 

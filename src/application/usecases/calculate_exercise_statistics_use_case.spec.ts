@@ -1,4 +1,4 @@
-import { ISubmissionAPI, ISubmission } from '../../infrastructure';
+import { ISubmissionApi, ISubmission } from '../../infrastructure';
 import { mock } from 'jest-mock-extended';
 import { Statistics } from '../../domain/statistics';
 import { GetStatisticsUseCase } from './calculate_exercise_statistics_use_case';
@@ -50,7 +50,7 @@ describe('do', () => {
   it('Should return an object with statistics field as undefined if Submissions response is an empty list ([])', async () => {
     // Arrange
     const expected = undefined;
-    const submissions_api = mock<ISubmissionAPI>();
+    const submissions_api = mock<ISubmissionApi>();
     const use_case = new GetStatisticsUseCase(submissions_api);
 
     // Mock
@@ -79,7 +79,7 @@ describe('do', () => {
       failed_queries: [{ query: 'B<> second query' }],
       has_syntax_error: true,
     };
-    const submissions_api = mock<ISubmissionAPI>();
+    const submissions_api = mock<ISubmissionApi>();
     const use_case = new GetStatisticsUseCase(submissions_api);
 
     // Mock
@@ -141,7 +141,7 @@ describe('do', () => {
       },
     ];
 
-    const submissions_api = mock<ISubmissionAPI>();
+    const submissions_api = mock<ISubmissionApi>();
     const use_case = new GetStatisticsUseCase(submissions_api);
 
     // Mock
@@ -164,10 +164,10 @@ describe('do', () => {
       id: expected.id,
       passed_total: {
         passed: expected.passed_total[0],
-        total: expected.passed_total[1]
+        total: expected.passed_total[1],
       },
-      query_result: expected.query_results
-    })
+      query_result: expected.query_results,
+    });
     // const key = Object.keys(actual.query_results)[0];
     // expect(actual.average_time).toBe(expected.average_time);
     // expect(actual.id).toBe(expected.id);
@@ -207,7 +207,7 @@ describe('do', () => {
         has_syntax_error: true,
       },
     ];
-    const submissions_api = mock<ISubmissionAPI>();
+    const submissions_api = mock<ISubmissionApi>();
     const use_case = new GetStatisticsUseCase(submissions_api);
 
     // Mock

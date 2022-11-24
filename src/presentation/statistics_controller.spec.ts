@@ -3,7 +3,10 @@ import { mock } from 'jest-mock-extended';
 import { v4 as uuidv4 } from 'uuid';
 import { IGetAStatisticsResponse } from '../application/usecases/calculate_exercise_statistics_use_case';
 import { statisticsController } from './statistics_controller';
-import { ISubmissionAPI, ISubmission } from '../infrastructure/i_submission_api';
+import {
+  ISubmissionApi,
+  ISubmission,
+} from '../infrastructure/i_submission_api';
 import { User } from '../application/actors/user';
 import { Statistics } from '../domain/statistics';
 
@@ -30,7 +33,7 @@ const STATISTICS_OBJECT_MULTIPLE_SUBMISSION = new Statistics(
 
 describe('get: /statistics/:id ', () => {
   const server = fastify();
-  const submission_api = mock<ISubmissionAPI>();
+  const submission_api = mock<ISubmissionApi>();
   const user = mock<User>();
   server.register(statisticsController, {
     submission_api: submission_api,
@@ -69,10 +72,14 @@ describe('get: /statistics/:id ', () => {
     expect(typeof payload.average_time).toBe('number');
     expect(typeof payload.passed_total).toBe('object');
     expect(typeof payload.query_result).toBe('object');
-    expect(typeof payload.query_result["A<> first query"].passes).toBe('number');
-    expect(typeof payload.query_result["A<> first query"].fails).toBe('number');
-    expect(typeof payload.query_result["A<> first query"].total).toBe('number');
-    expect(typeof payload.query_result["A<> first query"].pass_percentage).toBe('number');
+    expect(typeof payload.query_result['A<> first query'].passes).toBe(
+      'number',
+    );
+    expect(typeof payload.query_result['A<> first query'].fails).toBe('number');
+    expect(typeof payload.query_result['A<> first query'].total).toBe('number');
+    expect(typeof payload.query_result['A<> first query'].pass_percentage).toBe(
+      'number',
+    );
   });
 
   it('It should give status code 400 if no id is given', async () => {
@@ -105,7 +112,7 @@ describe('get: /statistics/:id ', () => {
 
     // Mock
     submission_api.getSubmissions.mockImplementation(() => {
-      throw new Error("Something went wrong")
+      throw new Error('Something went wrong');
     });
 
     // Act
