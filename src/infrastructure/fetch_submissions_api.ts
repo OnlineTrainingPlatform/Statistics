@@ -20,7 +20,7 @@ export class FetchSubmissionsApi implements ISubmissionApi {
         submissions: ISubmission[];
       };
 
-      console.log(body);
+      console.log(body.submissions[0]);
 
       return Promise.resolve(body.submissions);
     } catch (error) {
