@@ -24,7 +24,7 @@ if (process.env.HOST == undefined) {
   process.env.HOST = 'localhost';
 }
 
-if (process.env.EXERCISE_API_BASE_ROUTE == undefined) {
+if (process.env.SUBMISSIONS_API_BASE_ROUTE == undefined) {
   const defaultExercisesApiBaseRoute = process.env.HOST;
   console.log(
     "Missing environment variable 'SUBMISSIONS_API_BASE_ROUTE' and will default to HOST variable '" +
