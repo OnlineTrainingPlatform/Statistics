@@ -110,6 +110,9 @@ dist
 
 # TernJS port file
 .tern-port
+<<<<<<< HEAD
+=======
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+>>>>>>> feature/ImplementSubmissionMicroService

@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { User } from '../application/actors/user';
-import { IGetAStatisticsResponse } from '../application/usecases/calculate_exercise_statistics_use_case';
 
 export async function statisticsController(
   fastify: FastifyInstance,
