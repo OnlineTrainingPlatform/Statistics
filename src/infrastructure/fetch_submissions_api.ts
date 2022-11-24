@@ -5,7 +5,7 @@ export class FetchSubmissionsApi implements ISubmissionApi {
   async getSubmissions(exerciseId: string): Promise<ISubmission[]> {
     try {
       const response = await fetch(
-        `${process.env.SUBMISSIONS_API_BASE_ROUTE}/api/v1/exercises/${exerciseId}`,
+        `${process.env.SUBMISSIONS_API_BASE_ROUTE}/api/v1/exercises/${exerciseId}/submissions`,
       );
 
       if (response.status === 404) {
