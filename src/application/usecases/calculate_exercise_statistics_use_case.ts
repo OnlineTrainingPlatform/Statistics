@@ -49,8 +49,8 @@ export class GetStatisticsUseCase
         id: request.exercise_id,
         average_time: statistics.average_time,
         passed_total: {
-          passed: statistics.passed_total[0],
-          total: statistics.passed_total[1],
+          passed: 0,
+          total: 0,
         },
         query_result: statistics.query_results,
       },
