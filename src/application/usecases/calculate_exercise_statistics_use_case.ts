@@ -37,6 +37,7 @@ export class GetStatisticsUseCase
     );
 
     const statistics = await this.calculateStatistics(submissionsResult);
+    console.log(statistics);
     if (!statistics) {
       return {
         statistics: undefined,
@@ -94,11 +95,16 @@ export class GetStatisticsUseCase
       submission_dates.push(submission.submission_date);
     });
 
+    console.log(query_dict);
+    console.log(submission_dates);
+
     let average_time = 0;
     if (submission_dates.length > 0) {
       average_time =
         submission_dates.reduce((a, b) => a + b, 0) / submission_dates.length;
     }
+
+    console.log(average_time);
 
     const dictionary_keys = Array.from(query_dict.keys());
     const dictionary_values = Array.from(query_dict.values());
@@ -116,6 +122,9 @@ export class GetStatisticsUseCase
       };
     });
 
+    console.log(dictionary_keys);
+    console.log(dictionary_values);
+
     const statistics = new Statistics(
       submissions[0].exercise_id,
       average_time,
@@ -123,6 +132,9 @@ export class GetStatisticsUseCase
       total_syntax_errors,
       query_results,
     );
+
+    console.log(statistics);
+
     return statistics;
   }
 
