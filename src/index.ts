@@ -36,27 +36,27 @@ if (process.env.EXERCISE_API_BASE_ROUTE == undefined) {
 
 const server = fastify({
   logger: {
-    level: 'info'
-  }
+    level: 'info',
+  },
 });
 
-server.addHook("onRequest", (request, reply, done) => {
+server.addHook('onRequest', (request, reply, done) => {
   request.log.info({
     startTime: Date.now(),
     url: request.raw.url,
-    id: request.id
-  })
+    id: request.id,
+  });
   done();
-})
+});
 
 server.addHook('onResponse', (request, reply, done) => {
   request.log.info({
     url: request.raw.url,
     status: reply.raw.statusCode,
-    endTime: Date.now()
-  })
+    endTime: Date.now(),
+  });
   done();
-})
+});
 
 // Register the controllers
 server.register(statisticsController, {
