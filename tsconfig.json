@@ -9,7 +9,9 @@
     "strict": true,
     "esModuleInterop": true,
     "types": ["node", "jest"],
-    "skipLibCheck": true
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "skipLibCheck": true,
+    "baseUrl": "src",
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.spec.ts"]

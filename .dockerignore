@@ -88,7 +88,11 @@ dist
 
 # Gatsby files
 .cache/
-
+<<<<<<< HEAD
+# Comment in the public line in if your project uses Gatsby and *not* Next.js
+=======
+# Comment in the public line in if your project uses Gatsby and not Next.js
+>>>>>>> feature/ImplementSubmissionMicroService
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
@@ -106,6 +110,9 @@ dist
 
 # TernJS port file
 .tern-port
+<<<<<<< HEAD
+=======
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+>>>>>>> feature/ImplementSubmissionMicroService
