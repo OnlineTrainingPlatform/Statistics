@@ -62,16 +62,16 @@ describe('do', () => {
     const actualResponseObject = await use_case.do({
       exercise_id: 'ID',
     });
-    const actual = actualResponseObject;
+    const actual = actualResponseObject.statistics;
 
     // Assert
-    expect(actual.statistics).toBe(expected);
+    expect(actual).toBe(expected);
   });
   it('Should return a Statistics object from a single submission', async () => {
     // Arrange
     const expected = STATISTICS_OBJECT_ONE_SUBMISSION;
     const submission: ISubmission = {
-      id: 'submission_id',
+      id: expected.id,
       exercise_id: expected.id,
       solution: 'solution',
       submission_date: expected.average_time,
@@ -94,24 +94,21 @@ describe('do', () => {
     const actualResponseObject = await use_case.do({
       exercise_id: submission.id,
     });
-    const actual = actualResponseObject;
+    const actual = actualResponseObject.statistics;
     if (!actual) {
-      return;
+      throw new Error('.do() on usecase returns falsy object');
     }
 
     // Assert
-    const key = Object.keys(actual.statistics!.query_result)[0];
-    // expect(actual).toStrictEqual(expected)
-    // expect(actual.average_time).toBe(expected.average_time);
-    // expect(actual.id).toBe(expected.id);
-    // expect(actual.passed_total).toStrictEqual(expected.passed_total);
-    // expect(actual.syntax_errors).toBe(expected.syntax_errors);
-    // expect(actual.query_results[key].passes).toBe(expected.query_results[key].passes);
-    // expect(actual.query_results[key].fails).toBe(expected.query_results[key].fails);
-    // expect(actual.query_results[key].total).toBe(expected.query_results[key].total);
-    // expect(actual.query_results[key].pass_percentage).toBe(
-    //   expected.query_results[key].pass_percentage,
-    // );
+    expect(actual).toStrictEqual({
+      average_time: expected.average_time,
+      id: expected.id,
+      passed_total: {
+        passed: expected.passed_total[0],
+        total: expected.passed_total[1],
+      },
+      query_result: expected.query_results,
+    });
   });
   it('Should return a Statistics object from multiple submissions', async () => {
     // Arrange
@@ -153,13 +150,13 @@ describe('do', () => {
     const actualResponseObject = await use_case.do({
       exercise_id: expected.id,
     });
-    const actual = actualResponseObject;
+    const actual = actualResponseObject.statistics;
     if (!actual) {
-      return;
+      throw new Error('.do() on usecase returns falsy object');
     }
 
     // Assert
-    expect(actual.statistics).toStrictEqual({
+    expect(actual).toStrictEqual({
       average_time: expected.average_time,
       id: expected.id,
       passed_total: {
@@ -168,17 +165,6 @@ describe('do', () => {
       },
       query_result: expected.query_results,
     });
-    // const key = Object.keys(actual.query_results)[0];
-    // expect(actual.average_time).toBe(expected.average_time);
-    // expect(actual.id).toBe(expected.id);
-    // expect(actual.passed_total).toStrictEqual(expected.passed_total);
-    // expect(actual.syntax_errors).toBe(expected.syntax_errors);
-    // expect(actual.query_results[key].passes).toBe(expected.query_results[key].passes);
-    // expect(actual.query_results[key].fails).toBe(expected.query_results[key].fails);
-    // expect(actual.query_results[key].total).toBe(expected.query_results[key].total);
-    // expect(actual.query_results[key].pass_percentage).toBe(
-    //   expected.query_results[key].pass_percentage,
-    // );
   });
   it('Should ____ if the ids do not match', async () => {
     // Arrange
@@ -219,9 +205,12 @@ describe('do', () => {
     const actualResponseObject = await use_case.do({
       exercise_id: expected.id,
     });
-    const actual = actualResponseObject;
+    const actual = actualResponseObject.statistics;
+    if (!actual) {
+      throw new Error('.do() on usecase returns falsy object');
+    }
 
     // Assert
-    expect(actual.statistics!.id).toEqual(expected.id);
+    expect(actual.id).toEqual(expected.id);
   });
 });

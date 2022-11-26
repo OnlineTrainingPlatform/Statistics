@@ -47,12 +47,6 @@ export class Statistics {
       if (query.passes < 0) {
         throw new Error('There cannot be less than 0 submissions passing');
       }
-      // // No query can have less people who passed it, than the total amount of people who have passed the exercise
-      // if (query.passes < left) {
-      //   throw new Error(
-      //     'There cannot be less people who have passed any single query, than the total number of people who have passed everything',
-      //   );
-      // }
       if (query.fails < 0) {
         throw new Error('There cannot be less than 0 submissions failing');
       }
