@@ -36,11 +36,13 @@ export class GetStatisticsUseCase
       request.exercise_id,
     );
 
+    if (submissionsResult.length === 0) {
+      return { statistics: undefined };
+    }
+
     const statistics = await this.calculateStatistics(submissionsResult);
     if (!statistics) {
-      return {
-        statistics: undefined,
-      };
+      throw new Error('Calculation of statistics went wrong');
     }
 
     return {

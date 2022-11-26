@@ -106,23 +106,7 @@ describe('get: /statistics/:id ', () => {
     expect(response.statusCode).toBe(404);
   });
 
-  it('If status code is 500 then ____', async () => {
-    // Arrange
-    const exerciseId = uuidv4();
-
-    // Mock
-    submission_api.getSubmissions.mockImplementation(() => {
-      throw new Error('Something went wrong');
-    });
-
-    // Act
-    const response = await server.inject(`exercises/${exerciseId}/statistics`);
-
-    // Assert
-    expect(response.statusCode).toBe(500);
-  });
-
-  it('If status code is 500 then ____', async () => {
+  it('If status code is 500 then the getStatistics method throws an error', async () => {
     // Arrange
     const exerciseId = uuidv4();
 
